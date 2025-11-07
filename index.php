@@ -1,12 +1,21 @@
-<?
-if (isset($_REQUEST[session_name()])) session_start ();
-$auth=$_SESSION['auth'];
-$name_user=$_SESSION['name_user'];
+<?php
+if (isset($_REQUEST[session_name()])) {
+    session_start();
+}
+$auth = $_SESSION['auth'];
+$name_user = $_SESSION['name_user'];
+
+require_once 'function.php';
+
+$mysqlConnection = mysql_connect("localhost", "host1409556", "0f7cd928");
+if ($mysqlConnection) {
+    mysql_query("SET NAMES 'cp1251'", $mysqlConnection);
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<?
+<?php
 include 'head.php';
 ?>
 <title>Барышская епархия</title>
@@ -18,14 +27,11 @@ include 'head.php';
 <?php
 include 'golova.php';
 include 'menu.php';
-include 'function.php';
 ?>
 
 <div id="content_right" style="margin-top: 10px"> 
 <div style="text-align:center"><a href="//www.yandex.ru/?add=178939&from=promocode">Наш новостной виджет на <span style="color:red">Я</span><span style="color:#000">ндекс</span></a></div><br />
-<?
- mysql_connect("localhost", "host1409556", "0f7cd928"); 
-mysql_query("SET NAMES 'cp1251'");
+<?php
 
 	$news_day = mysql_query("SELECT * FROM host1409556_barysh.news_day");
 
@@ -121,45 +127,57 @@ if ($month_today.'.'.$day_today == $arhi_postrig) {
 if ($month_today.'.'.$day_today == $arhi_angel) {
 	$text_arhi .= 'день ангела</div>';
 	}
-	//ДНИ РОЖДЕНИЯ
-	$klirik_all = mysql_query("SELECT id, name, san, rozd FROM host1409556_barysh.klir WHERE rozd LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['rozd'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - день рождения <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}
-	//ДИАКОНСКАЯ ХИРОТОНИЯ
-	$klirik_all = mysql_query("SELECT id, name, san, diak FROM host1409556_barysh.klir WHERE diak LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['diak'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - диаконская хиротония <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}
-	//ИЕРЕЙСКАЯ ХИРОТОНИЯ
-	$klirik_all = mysql_query("SELECT id, name, san, presv FROM host1409556_barysh.klir WHERE presv LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['presv'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - иерейская хиротония <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}
-	//МОНАШЕСКИЙ ПОСТРИГ
-	$klirik_all = mysql_query("SELECT id, name, san, monah FROM host1409556_barysh.klir WHERE monah LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['monah'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - монашеский постриг <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}	
-	//ДНИ АНГЕЛА
-	$klirik_all = mysql_query("SELECT id, name, san FROM host1409556_barysh.klir WHERE angel LIKE '%$day_today.$month_today%' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - день ангела</div>';
-}
-		//ПРЕСТОЛЫ
+        // События духовенства (дни рождения, хиротонии, постриги, дни ангела)
+        $text_cal = '';
+        $text_cal_prest = '';
+
+        $calendarDateKey = $month_today.'.'.$day_today;
+        $angelDateKey = $day_today.'.'.$month_today;
+
+        $klirik_all = mysql_query("SELECT id, name, san, rozd, diak, presv, monah, angel FROM host1409556_barysh.klir WHERE status LIKE 'штатный' AND (rozd LIKE '%$calendarDateKey' OR diak LIKE '%$calendarDateKey' OR presv LIKE '%$calendarDateKey' OR monah LIKE '%$calendarDateKey' OR angel LIKE '%$angelDateKey%') ORDER by name ASC");
+
+        $calendarEvents = array(
+                'birthday' => array(),
+                'diakon' => array(),
+                'ierey' => array(),
+                'monah' => array(),
+                'angel' => array(),
+        );
+
+        if ($klirik_all) {
+                while ($klirik = mysql_fetch_assoc($klirik_all)) {
+                        if (!empty($klirik['rozd']) && substr($klirik['rozd'], 5, 5) === $calendarDateKey) {
+                                $yy = substr($klirik['rozd'], 0, 4); // Год
+                                $res = $god_today - $yy;
+                                $calendarEvents['birthday'][] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - день рождения <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
+                        }
+                        if (!empty($klirik['diak']) && substr($klirik['diak'], 5, 5) === $calendarDateKey) {
+                                $yy = substr($klirik['diak'], 0, 4); // Год
+                                $res = $god_today - $yy;
+                                $calendarEvents['diakon'][] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - диаконская хиротония <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
+                        }
+                        if (!empty($klirik['presv']) && substr($klirik['presv'], 5, 5) === $calendarDateKey) {
+                                $yy = substr($klirik['presv'], 0, 4); // Год
+                                $res = $god_today - $yy;
+                                $calendarEvents['ierey'][] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - иерейская хиротония <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
+                        }
+                        if (!empty($klirik['monah']) && substr($klirik['monah'], 5, 5) === $calendarDateKey) {
+                                $yy = substr($klirik['monah'], 0, 4); // Год
+                                $res = $god_today - $yy;
+                                $calendarEvents['monah'][] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - монашеский постриг <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
+                        }
+                        if (!empty($klirik['angel']) && strpos($klirik['angel'], $angelDateKey) !== false) {
+                                $calendarEvents['angel'][] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - день ангела</div>';
+                        }
+                }
+        }
+
+        foreach (array('birthday', 'diakon', 'ierey', 'monah', 'angel') as $eventType) {
+                if (!empty($calendarEvents[$eventType])) {
+                        $text_cal .= implode('', $calendarEvents[$eventType]);
+                }
+        }
+        //ПРЕСТОЛЫ
 	$prihod_all = mysql_query("SELECT id, name FROM host1409556_barysh.prihods WHERE angel LIKE '%$day_today.$month_today%' ORDER by name ASC");
 while($prihod = mysql_fetch_array($prihod_all))
 {
@@ -221,8 +239,8 @@ if ($news_r[text]) echo '<br />';
 <h2 style=" border-bottom: 5px solid #F0D0C8;"><a style="color: #A35241;border-bottom: 5px solid #F0D0C8;" href="anons.php">Анонсы и объявления</a></h2>
 <br />
 
- <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
-	$news_all = mysql_query("SELECT * FROM host1409556_barysh.anons WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 2");
+ <?
+        $news_all = mysql_query("SELECT * FROM host1409556_barysh.anons WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 2");
 	for ($t=0; $t<mysql_num_rows($news_all); $t++)
 {
 $news = mysql_fetch_array($news_all); 
@@ -274,8 +292,8 @@ echo '<p>'.$text.'</p></div><br />';
 <br />
 <h2> <a href="slovo_padre.php">Слово архипастыря</a></h2>
 <br />
- <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
- 	$news_all = mysql_query("SELECT * FROM host1409556_barysh.padre WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 2");
+ <?
+        $news_all = mysql_query("SELECT * FROM host1409556_barysh.padre WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 2");
 	for ($t=0; $t<mysql_num_rows($news_all); $t++)
 {
 $news = mysql_fetch_array($news_all); 
@@ -427,8 +445,8 @@ $page_news_day = $new_day[page];
 <h2><a href="news.php">Новости епархии</a></h2>
 <br />
 
- <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
- 	$news_all = mysql_query("SELECT * FROM host1409556_barysh.news_eparhia WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 3");
+ <?
+        $news_all = mysql_query("SELECT * FROM host1409556_barysh.news_eparhia WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 3");
 	for ($t=0; $t<mysql_num_rows($news_all); $t++)
 {
 $news = mysql_fetch_array($news_all); 
@@ -489,8 +507,8 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 <h2><a href="pub.php">Публикации</a></h2>
 <br />
 
- <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
- 	$pub_all = mysql_query("SELECT * FROM host1409556_barysh.publikacii WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 3");
+ <?
+        $pub_all = mysql_query("SELECT * FROM host1409556_barysh.publikacii WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 3");
 	for ($t=0; $t<mysql_num_rows($pub_all); $t++)
 {
 $pub = mysql_fetch_array($pub_all); 
