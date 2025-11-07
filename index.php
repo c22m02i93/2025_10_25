@@ -9,173 +9,193 @@ $name_user=$_SESSION['name_user'];
 <?
 include 'head.php';
 ?>
-<title>Барышская епархия</title>
+ mysql_connect("localhost", "host1409556", "0f7cd928");
 
-</head>
-<body>
+        $news_day = mysql_query("SELECT * FROM host1409556_barysh.news_day");
 
-<div style="box-shadow: 0 0 20px rgba(0,0,0,0.5);">
-<?php
-include 'golova.php';
-include 'menu.php';
-include 'function.php';
-?>
+        $new_day = mysql_fetch_array($news_day);
+$dtn_day = $new_day['data'];
 
-<div id="content_right" style="margin-top: 10px"> 
-<div style="text-align:center"><a href="//www.yandex.ru/?add=178939&from=promocode">Наш новостной виджет на <span style="color:red">Я</span><span style="color:#000">ндекс</span></a></div><br />
+        $data_today = Date("Y.m.d");
+        $chas_today = Date("H:i");
+        $god_today = Date("Y");
+
+        $cache_dir = __DIR__.'/cache';
+        $cache_lifetime = 600;
+        if (!is_dir($cache_dir)) {
+                mkdir($cache_dir, 0755, true);
+        }
+
+        $sidebar_cache_file = $cache_dir.'/sidebar-'.$data_today.'.html';
+        $sidebar_html = '';
+        $need_sidebar_refresh = true;
+        if (file_exists($sidebar_cache_file) && (time() - filemtime($sidebar_cache_file)) < $cache_lifetime) {
+                $sidebar_html = file_get_contents($sidebar_cache_file);
+                if ($sidebar_html !== false) {
+                        $need_sidebar_refresh = false;
+                }
+        }
+
+        if ($need_sidebar_refresh) {
+                ob_start();
+
+        $hod_all = mysql_query("SELECT * FROM host1409556_barysh.krest_hod_$god_today where data = '$data_today' ORDER BY pribyv ASC");
+
+        if ($hod_all && mysql_num_rows($hod_all) > 0) {
+
+                echo '<div style="background: #fff; width: 90%; border: 1px solid #D7D7D7;box-shadow:2px 3px 5px #aaa; padding: 5px 10px">';
+                echo '<div class="title" style="text-align: center"><b>   </b></div><hr />';
+                        while ($hod = mysql_fetch_array($hod_all))
+                        {
+
+                        if ($hod['pribyv'] == '00:00' && $hod['otbyv'] == '24:00')
+                                $pribyv_otbyv = '  ';
+                        else
+                                $pribyv_otbyv = $hod['pribyv'].' - '.$hod['otbyv'].' ';
+
+
+                        if ($chas_today > $hod['otbyv']) echo '<span style="color: #aaa"><b>'.$pribyv_otbyv.'</b> '.$hod['nas_punkt'].'</span><br />';
+                        elseif ($chas_today < $hod['pribyv']) echo '<b>'.$pribyv_otbyv.'</b> '.$hod['nas_punkt'].'<br />';
+                        else echo '<div style="width:100%; background:#F8FCBE"><b>'.$pribyv_otbyv.'</b> '.$hod['nas_punkt'].'</div>';
+                        }
+                echo '<hr /><div style="text-align: center"><a href="hod.php?year='.$god_today.'#'.$data_today.'">   </a></div><br /></div><br /><br />';
+
+        }
+
+        $day_today = Date("d");
+        $month_today = Date("m");
+
+ if ($month_today == '01') {$mon2 = '';}
+ if ($month_today == '02') {$mon2 = '';}
+ if ($month_today == '03') {$mon2 = '';}
+ if ($month_today == '04') {$mon2 = '';}
+ if ($month_today == '05') {$mon2 = '';}
+ if ($month_today == '06') {$mon2 = '';}
+ if ($month_today == '07') {$mon2 = '';}
+ if ($month_today == '08') {$mon2 = '';}
+ if ($month_today == '09') {$mon2 = '';}
+ if ($month_today == '10') {$mon2 = '';}
+ if ($month_today == '11') {$mon2 = '';}
+ if ($month_today == '12') {$mon2 = '';}
+        $arhi_rozd = '12.06';
+        $arhi_hiro = '10.28';
+        $arhi_postrig = '11.30';
+        $arhi_angel = '12.02';
+        $arhi_text = '<div style="margin-bottom: 5px"><a href="/arhierei.php" target="_blank">    </a> - ';
+
+        $yy = '1963';
+        $res = $god_today - $yy;
+        $text_arhi = '  <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+        }
+        $yy = '2012';
+        $res = $god_today - $yy;
+        $text_arhi = '  <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+        }
+        $yy = '1996';
+        $res = $god_today - $yy;
+        $text_arhi = '  <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+        }
+        $text_arhi .= ' </div>';
+        }
+
+        $calendar_events = array(
+                'rozd' => array(),
+                'diak' => array(),
+                'presv' => array(),
+                'monah' => array()
+        );
+        $angel_events = array();
+        $day_month_pattern = $month_today.'.'.$day_today;
+        $angel_pattern = $day_today.'.'.$month_today;
+        $klirik_all = mysql_query("SELECT id, name, san, rozd, diak, presv, monah, angel FROM host1409556_barysh.klir WHERE status LIKE '' AND (rozd LIKE '%$day_month_pattern' OR diak LIKE '%$day_month_pattern' OR presv LIKE '%$day_month_pattern' OR monah LIKE '%$day_month_pattern' OR angel LIKE '%$angel_pattern%') ORDER by name ASC");
+        if ($klirik_all) {
+                while ($klirik = mysql_fetch_assoc($klirik_all)) {
+                        foreach (array('rozd', 'diak', 'presv', 'monah') as $field) {
+                                if (!empty($klirik[$field]) && substr($klirik[$field], 5) === $day_month_pattern) {
+                                        $yy = substr($klirik[$field], 0, 4);
+                                        $res = $god_today - $yy;
+                                        $calendar_events[$field][] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> -   <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+                                }
+                        }
+                        if (!empty($klirik['angel']) && strpos($klirik['angel'], $angel_pattern) !== false) {
+                                $angel_events[] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> -  </div>';
+                        }
+                }
+        }
+
+        $text_cal = '';
+        foreach (array('rozd', 'diak', 'presv', 'monah') as $field) {
+                if (!empty($calendar_events[$field])) {
+                        $text_cal .= implode('', $calendar_events[$field]);
+                }
+        }
+        if (!empty($angel_events)) {
+                $text_cal .= implode('', $angel_events);
+        }
+
+        $text_cal_prest = '';
+        $prihod_all = mysql_query("SELECT id, name FROM host1409556_barysh.prihods WHERE angel LIKE '%$day_today.$month_today%' ORDER by name ASC");
+        if ($prihod_all) {
+                while ($prihod = mysql_fetch_array($prihod_all))
+                {
+                        $text_cal_prest .= '<div style="margin-bottom: 5px"><a href="/prihod.php?id='.$prihod['id'].'" target="_blank">'.$prihod['name'].'</a></div>';
+                }
+        }
+
+        echo '<div style="background: #fff; width: 90%; border: 1px solid #D7D7D7;box-shadow:2px 3px 5px #aaa; padding: 5px 10px">';
+        echo '<div class="title" style="text-align: center"><b> </b></div><hr />';
+        echo '<div style="color:red;font-size: 110%; text-align: center; ">'.$dd_today.' '.$mon2.'</div><br />';
+        if ($text_arhi) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px"></h2>'.$arhi_text.$text_arhi.'</div>';
+        if ($text_cal) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px"></h2>'.$text_cal.'</div>';
+        if ($text_cal_prest) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px"> </h2>'.$text_cal_prest.'</div>';
+        if (empty($text_cal) && empty($text_cal_prest) && empty($text_arhi)) {
+                echo '<p>  </p><br />';
+        echo '<hr /><div style="text-align: center"><a style="color: #666" href="/kalendar.php?month='.$month_today.'"> </a></div><br /></div><br /><br />';
+
+
+
 <?
- mysql_connect("localhost", "host1409556", "0f7cd928"); 
-mysql_query("SET NAMES 'cp1251'");
+        $raspisanie_rows = array();
+        $news_all = mysql_query("SELECT * FROM host1409556_barysh.raspisanie where data between '$data_today' and '9999.12.31' ORDER BY data ASC, (text+0) ASC LIMIT 3");
+        if ($news_all) {
+                while ($news = mysql_fetch_assoc($news_all)) {
+                        $raspisanie_rows[] = $news;
+                }
+        }
 
-	$news_day = mysql_query("SELECT * FROM host1409556_barysh.news_day");
+        $news_r = isset($raspisanie_rows[0]) ? $raspisanie_rows[0] : null;
+        if (!empty($news_r['text'])) echo '<h2 style="border-bottom: 5px solid #E6E0C6;"><a style="color: #7A6D42;border-bottom: 5px solid #E6E0C6;" href="raspisanie.php"> </a></h2><br />';
 
-	$new_day = mysql_fetch_array($news_day); 
-$dtn_day = $new_day['data']; 
+        foreach ($raspisanie_rows as $news) {
+                echo '<div class="box_arhi">
 
-	####################################### Крестный ход сейчас
-	$data_today = Date("Y.m.d");
-	$chas_today = Date("H:i");
-	$god_today = Date("Y");
+<h3>'.$news['data_text'].' - '.$news['nedel'].'</h3>';
+                $patterns = array ('/
+/', '/(\d{1,2}:\d{2})/');
+                $replace = array ('</p><p>', '<b>${1}</b>');
+                $text = preg_replace($patterns, $replace, $news['text']);
+        }
+        if (!empty($news_r['text'])) echo '<br />';
+        $sidebar_html = ob_get_clean();
+        file_put_contents($sidebar_cache_file, $sidebar_html);
+        }
 
-	$hod_all = mysql_query("SELECT * FROM host1409556_barysh.krest_hod_$god_today where data = '$data_today' ORDER BY pribyv ASC");
-	
-	$hod_all = 0; // fixme
-	
-	if (mysql_num_rows($hod_all) > 0) {
-		
-		echo '<div style="background: #fff; width: 90%; border: 1px solid #D7D7D7;box-shadow:2px 3px 5px #aaa; padding: 5px 10px">';
-		echo '<div class="title" style="text-align: center"><b>Где сейчас крестный ход</b></div><hr />';
-			for ($t=0; $t<mysql_num_rows($hod_all); $t++)
-			{
-			$hod = mysql_fetch_array($hod_all); 
-			
-			if ($hod['pribyv'] == '00:00' && $hod['otbyv'] == '24:00') 
-				$pribyv_otbyv = 'Весь день ';
-/* 			elseif ($hod['pribyv'] == '00:00') 
-				$pribyv_otbyv = 'До '.$hod['otbyv'].' &#8195;  &#8195; ';
-			elseif ($hod['otbyv'] == '24:00') 
-				$pribyv_otbyv = 'С '.$hod['pribyv'].' &#8195;  &#8195; ';
- */			
-			else
-				$pribyv_otbyv = $hod['pribyv'].' - '.$hod['otbyv'].' ';
+        echo $sidebar_html;
 
 
-			if ($chas_today > $hod['otbyv']) echo '<span style="color: #aaa"><b>'.$pribyv_otbyv.'</b> '.$hod['nas_punkt'].'</span><br />'; 
-			elseif ($chas_today < $hod['pribyv']) echo '<b>'.$pribyv_otbyv.'</b> '.$hod['nas_punkt'].'<br />';
-			else echo '<div style="width:100%; background:#F8FCBE"><b>'.$pribyv_otbyv.'</b> '.$hod['nas_punkt'].'</div>';
-			}
-		echo '<hr /><div style="text-align: center"><a href="hod.php?year='.$god_today.'#'.$data_today.'">Полное расписание и фотоотчеты</a></div><br /></div><br /><br />';
-
-	}
-#######################################
-
-####################################### Календарь епархии
-	$day_today = Date("d");	
-	$month_today = Date("m");
-	
- if ($month_today == '01') {$mon2 = 'января';}
- if ($month_today == '02') {$mon2 = 'февраля';}
- if ($month_today == '03') {$mon2 = 'марта';}
- if ($month_today == '04') {$mon2 = 'апреля';}
- if ($month_today == '05') {$mon2 = 'мая';}
- if ($month_today == '06') {$mon2 = 'июня';}
- if ($month_today == '07') {$mon2 = 'июля';}
- if ($month_today == '08') {$mon2 = 'августа';}
- if ($month_today == '09') {$mon2 = 'сентября';}
- if ($month_today == '10') {$mon2 = 'октября';}
- if ($month_today == '11') {$mon2 = 'ноября';}
- if ($month_today == '12') {$mon2 = 'декабря';}
-
-$dd_today = $day_today;
-if ($day_today == "01") $dd_today="1";
-if ($day_today == "02") $dd_today="2";
-if ($day_today == "03") $dd_today="3";
-if ($day_today == "04") $dd_today="4";
-if ($day_today == "05") $dd_today="5";
-if ($day_today == "06") $dd_today="6";
-if ($day_today == "07") $dd_today="7";
-if ($day_today == "08") $dd_today="8";
-if ($day_today == "09") $dd_today="9";
-	//АРХИЕРЕЙ
-	$arhi_rozd = '12.06';
-	$arhi_hiro = '10.28';
-	$arhi_postrig = '11.30';
-	$arhi_angel = '12.02';
-	$arhi_text = '<div style="margin-bottom: 5px"><a href="/arhierei.php" target="_blank">Епископ Барышский и Инзенский Филарет</a> - ';
-	
-if ($month_today.'.'.$day_today == $arhi_rozd) {
-	$yy = '1963';
-	$res = $god_today - $yy;
-	$text_arhi = 'день рождения <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-	}
-if ($month_today.'.'.$day_today == $arhi_hiro) {
-	$yy = '2012';
-	$res = $god_today - $yy;
-	$text_arhi = 'архиерейская хиротония <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-	}
-if ($month_today.'.'.$day_today == $arhi_postrig) {
-	$yy = '1996';
-	$res = $god_today - $yy;
-	$text_arhi = 'монашеский постриг <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-	}
-if ($month_today.'.'.$day_today == $arhi_angel) {
-	$text_arhi .= 'день ангела</div>';
-	}
-	//ДНИ РОЖДЕНИЯ
-	$klirik_all = mysql_query("SELECT id, name, san, rozd FROM host1409556_barysh.klir WHERE rozd LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['rozd'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - день рождения <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}
-	//ДИАКОНСКАЯ ХИРОТОНИЯ
-	$klirik_all = mysql_query("SELECT id, name, san, diak FROM host1409556_barysh.klir WHERE diak LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['diak'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - диаконская хиротония <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}
-	//ИЕРЕЙСКАЯ ХИРОТОНИЯ
-	$klirik_all = mysql_query("SELECT id, name, san, presv FROM host1409556_barysh.klir WHERE presv LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['presv'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - иерейская хиротония <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}
-	//МОНАШЕСКИЙ ПОСТРИГ
-	$klirik_all = mysql_query("SELECT id, name, san, monah FROM host1409556_barysh.klir WHERE monah LIKE '%$month_today.$day_today' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$yy = substr($klirik['monah'],0,4); // Год
-	$res = $god_today - $yy;
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - монашеский постриг <b>'.$res.' '.yearRus($res, 'год', 'года', 'лет').'</b></div>';
-}	
-	//ДНИ АНГЕЛА
-	$klirik_all = mysql_query("SELECT id, name, san FROM host1409556_barysh.klir WHERE angel LIKE '%$day_today.$month_today%' AND status LIKE 'штатный' ORDER by name ASC");
-while($klirik = mysql_fetch_array($klirik_all))
-{
-	$text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> - день ангела</div>';
-}
-		//ПРЕСТОЛЫ
-	$prihod_all = mysql_query("SELECT id, name FROM host1409556_barysh.prihods WHERE angel LIKE '%$day_today.$month_today%' ORDER by name ASC");
-while($prihod = mysql_fetch_array($prihod_all))
-{
-	$text_cal_prest .= '<div style="margin-bottom: 5px"><a href="/prihod.php?id='.$prihod['id'].'" target="_blank">'.$prihod['name'].'</a></div>';
+ <? 
 }
 	
 	echo '<div style="background: #fff; width: 90%; border: 1px solid #D7D7D7;box-shadow:2px 3px 5px #aaa; padding: 5px 10px">';
-	echo '<div class="title" style="text-align: center"><b>Календарь епархии</b></div><hr />';
+	echo '<div class="title" style="text-align: center"><b>ГЉГ Г«ГҐГ­Г¤Г Г°Гј ГҐГЇГ Г°ГµГЁГЁ</b></div><hr />';
 	echo '<div style="color:red;font-size: 110%; text-align: center; ">'.$dd_today.' '.$mon2.'</div><br />'; 	
-	if ($text_arhi) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">Архиерей</h2>'.$arhi_text.$text_arhi.'</div>';
-	if ($text_cal) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">Духовенство</h2>'.$text_cal.'</div>';
-	if ($text_cal_prest) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">Престольный праздник</h2>'.$text_cal_prest.'</div>';
+	if ($text_arhi) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">ГЂГ°ГµГЁГҐГ°ГҐГ©</h2>'.$arhi_text.$text_arhi.'</div>';
+	if ($text_cal) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">Г„ГіГµГ®ГўГҐГ­Г±ГІГўГ®</h2>'.$text_cal.'</div>';
+	if ($text_cal_prest) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">ГЏГ°ГҐГ±ГІГ®Г«ГјГ­Г»Г© ГЇГ°Г Г§Г¤Г­ГЁГЄ</h2>'.$text_cal_prest.'</div>';
 	if (empty($text_cal) && empty($text_cal_prest) && empty($text_arhi)) {
-		echo '<p>Сегодня событий нет</p><br />';
+		echo '<p>Г‘ГҐГЈГ®Г¤Г­Гї Г±Г®ГЎГ»ГІГЁГ© Г­ГҐГІ</p><br />';
 }
-	echo '<hr /><div style="text-align: center"><a style="color: #666" href="/kalendar.php?month='.$month_today.'">Весь календарь</a></div><br /></div><br /><br />';
+	echo '<hr /><div style="text-align: center"><a style="color: #666" href="/kalendar.php?month='.$month_today.'">Г‚ГҐГ±Гј ГЄГ Г«ГҐГ­Г¤Г Г°Гј</a></div><br /></div><br /><br />';
 #######################################
 ?>
 <!--<div style="text-align: center"><a href="pyatino.php" ><img style="width: 80%; margin: 0 auto" src="/IMG/pyatino.png" border="0" /></a><br /><br />
@@ -194,7 +214,7 @@ while($prihod = mysql_fetch_array($prihod_all))
 <?	$news_all_r = mysql_query("SELECT * FROM host1409556_barysh.raspisanie where data between '$data_today' and '9999.12.31' ORDER BY data ASC LIMIT 1");
 
 $news_r = mysql_fetch_array($news_all_r); 
-if ($news_r[text]) echo '<h2 style="border-bottom: 5px solid #E6E0C6;"><a style="color: #7A6D42;border-bottom: 5px solid #E6E0C6;" href="raspisanie.php">Архиерейское служение</a></h2><br />';
+if ($news_r[text]) echo '<h2 style="border-bottom: 5px solid #E6E0C6;"><a style="color: #7A6D42;border-bottom: 5px solid #E6E0C6;" href="raspisanie.php">ГЂГ°ГµГЁГҐГ°ГҐГ©Г±ГЄГ®ГҐ Г±Г«ГіГ¦ГҐГ­ГЁГҐ</a></h2><br />';
 
 
 		$news_all = mysql_query("SELECT * FROM host1409556_barysh.raspisanie where data between '$data_today' and '9999.12.31' ORDER BY data ASC, (text+0) ASC LIMIT 3");
@@ -218,7 +238,7 @@ if ($news_r[text]) echo '<br />';
 
 ?>
 
-<h2 style=" border-bottom: 5px solid #F0D0C8;"><a style="color: #A35241;border-bottom: 5px solid #F0D0C8;" href="anons.php">Анонсы и объявления</a></h2>
+<h2 style=" border-bottom: 5px solid #F0D0C8;"><a style="color: #A35241;border-bottom: 5px solid #F0D0C8;" href="anons.php">ГЂГ­Г®Г­Г±Г» ГЁ Г®ГЎГєГїГўГ«ГҐГ­ГЁГї</a></h2>
 <br />
 
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
@@ -228,23 +248,23 @@ if ($news_r[text]) echo '<br />';
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[data]; 
-$yyn = substr($dtn,0,4); // Год
-$mmn = substr($dtn,5,2); // Месяц
-$ddn = substr($dtn,8,2); // День
+$yyn = substr($dtn,0,4); // ГѓГ®Г¤
+$mmn = substr($dtn,5,2); // ГЊГҐГ±ГїГ¶
+$ddn = substr($dtn,8,2); // Г„ГҐГ­Гј
 
-// Переназначаем переменные
-if ($mmn == "01") $mm1n="янв.";
-if ($mmn == "02") $mm1n="фев.";
-if ($mmn == "03") $mm1n="мар.";
-if ($mmn == "04") $mm1n="апр.";
-if ($mmn == "05") $mm1n="мая";
-if ($mmn == "06") $mm1n="июн.";
-if ($mmn == "07") $mm1n="июл.";
-if ($mmn == "08") $mm1n="авг.";
-if ($mmn == "09") $mm1n="сен.";
-if ($mmn == "10") $mm1n="окт.";
-if ($mmn == "11") $mm1n="нояб.";
-if ($mmn == "12") $mm1n="дек.";
+// ГЏГҐГ°ГҐГ­Г Г§Г­Г Г·Г ГҐГ¬ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
+if ($mmn == "01") $mm1n="ГїГ­Гў.";
+if ($mmn == "02") $mm1n="ГґГҐГў.";
+if ($mmn == "03") $mm1n="Г¬Г Г°.";
+if ($mmn == "04") $mm1n="Г ГЇГ°.";
+if ($mmn == "05") $mm1n="Г¬Г Гї";
+if ($mmn == "06") $mm1n="ГЁГѕГ­.";
+if ($mmn == "07") $mm1n="ГЁГѕГ«.";
+if ($mmn == "08") $mm1n="Г ГўГЈ.";
+if ($mmn == "09") $mm1n="Г±ГҐГ­.";
+if ($mmn == "10") $mm1n="Г®ГЄГІ.";
+if ($mmn == "11") $mm1n="Г­Г®ГїГЎ.";
+if ($mmn == "12") $mm1n="Г¤ГҐГЄ.";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -256,9 +276,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Время 
+ <? 
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' г. '.$hours.'</span>'; // Конечный вид строки
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ГЈ. '.$hours.'</span>'; // ГЉГ®Г­ГҐГ·Г­Г»Г© ГўГЁГ¤ Г±ГІГ°Г®ГЄГЁ
 
 	$patterns = array ('/\n/');
 	$replace = array ('</p><p>');
@@ -272,7 +292,7 @@ echo '<p>'.$text.'</p></div><br />';
 ?>
 
 <br />
-<h2> <a href="slovo_padre.php">Слово архипастыря</a></h2>
+<h2> <a href="slovo_padre.php">Г‘Г«Г®ГўГ® Г Г°ГµГЁГЇГ Г±ГІГ»Г°Гї</a></h2>
 <br />
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
  	$news_all = mysql_query("SELECT * FROM host1409556_barysh.padre WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 2");
@@ -281,23 +301,23 @@ echo '<p>'.$text.'</p></div><br />';
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[data]; 
-$yyn = substr($dtn,0,4); // Год
-$mmn = substr($dtn,5,2); // Месяц
-$ddn = substr($dtn,8,2); // День
+$yyn = substr($dtn,0,4); // ГѓГ®Г¤
+$mmn = substr($dtn,5,2); // ГЊГҐГ±ГїГ¶
+$ddn = substr($dtn,8,2); // Г„ГҐГ­Гј
 
-// Переназначаем переменные
-if ($mmn == "01") $mm1n="января";
-if ($mmn == "02") $mm1n="февраля";
-if ($mmn == "03") $mm1n="марта";
-if ($mmn == "04") $mm1n="апреля";
-if ($mmn == "05") $mm1n="мая";
-if ($mmn == "06") $mm1n="июня";
-if ($mmn == "07") $mm1n="июля";
-if ($mmn == "08") $mm1n="августа";
-if ($mmn == "09") $mm1n="сентября";
-if ($mmn == "10") $mm1n="октября";
-if ($mmn == "11") $mm1n="ноября";
-if ($mmn == "12") $mm1n="декабря";
+// ГЏГҐГ°ГҐГ­Г Г§Г­Г Г·Г ГҐГ¬ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
+if ($mmn == "01") $mm1n="ГїГ­ГўГ Г°Гї";
+if ($mmn == "02") $mm1n="ГґГҐГўГ°Г Г«Гї";
+if ($mmn == "03") $mm1n="Г¬Г Г°ГІГ ";
+if ($mmn == "04") $mm1n="Г ГЇГ°ГҐГ«Гї";
+if ($mmn == "05") $mm1n="Г¬Г Гї";
+if ($mmn == "06") $mm1n="ГЁГѕГ­Гї";
+if ($mmn == "07") $mm1n="ГЁГѕГ«Гї";
+if ($mmn == "08") $mm1n="Г ГўГЈГіГ±ГІГ ";
+if ($mmn == "09") $mm1n="Г±ГҐГ­ГІГїГЎГ°Гї";
+if ($mmn == "10") $mm1n="Г®ГЄГІГїГЎГ°Гї";
+if ($mmn == "11") $mm1n="Г­Г®ГїГЎГ°Гї";
+if ($mmn == "12") $mm1n="Г¤ГҐГЄГ ГЎГ°Гї";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -309,15 +329,15 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Время 
+$hours = substr($dtn,11,5); // Г‚Г°ГҐГ¬Гї 
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' г. '.$hours.'</span>'; // Конечный вид строки
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ГЈ. '.$hours.'</span>'; // ГЉГ®Г­ГҐГ·Г­Г»Г© ГўГЁГ¤ Г±ГІГ°Г®ГЄГЁ
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/', '/\[/', '/\]/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '', '', '');
 
 	$news[text] = preg_replace($patterns, $replace, $news[text]);
 	 if (preg_match_all ("/[^\t]{250}/", $news[text], $massiv_news)) {
-	   $text = $massiv_news[0][0].'... <a href="slovo_padre_show.php?data='.$news[data].'">(читать далее)</a>';}
+	   $text = $massiv_news[0][0].'... <a href="slovo_padre_show.php?data='.$news[data].'">(Г·ГЁГІГ ГІГј Г¤Г Г«ГҐГҐ)</a>';}
 	   else $text = $news[text];
 
 
@@ -334,7 +354,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 
 
 <br />
-<!--<h2>Карта приходов</h2>
+<!--<h2>ГЉГ Г°ГІГ  ГЇГ°ГЁГµГ®Г¤Г®Гў</h2>
 <br />
 <a href="http://www.barysh-eparhia.ru/map.php"><CENTER><img style="border: #BEC7BE 1px solid; width: 75%; margin: 0 auto" src="IMG/map.png" /></CENTER></a><br />
 -->
@@ -349,26 +369,26 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 <div id="new_day">
 
  <?   
-  ############################ НОВОСТЬ ДНЯ 
+  ############################ ГЌГЋГ‚ГЋГ‘Г’Гњ Г„ГЌГџ 
  
 
-$yyn = substr($dtn_day,0,4); // Год
-$mmn = substr($dtn_day,5,2); // Месяц
-$ddn = substr($dtn_day,8,2); // День
+$yyn = substr($dtn_day,0,4); // ГѓГ®Г¤
+$mmn = substr($dtn_day,5,2); // ГЊГҐГ±ГїГ¶
+$ddn = substr($dtn_day,8,2); // Г„ГҐГ­Гј
 
-// Переназначаем переменные
-if ($mmn == "01") $mm1n="января";
-if ($mmn == "02") $mm1n="февраля";
-if ($mmn == "03") $mm1n="марта";
-if ($mmn == "04") $mm1n="апреля";
-if ($mmn == "05") $mm1n="мая";
-if ($mmn == "06") $mm1n="июня";
-if ($mmn == "07") $mm1n="июля";
-if ($mmn == "08") $mm1n="августа";
-if ($mmn == "09") $mm1n="сентября";
-if ($mmn == "10") $mm1n="октября";
-if ($mmn == "11") $mm1n="ноября";
-if ($mmn == "12") $mm1n="декабря";
+// ГЏГҐГ°ГҐГ­Г Г§Г­Г Г·Г ГҐГ¬ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
+if ($mmn == "01") $mm1n="ГїГ­ГўГ Г°Гї";
+if ($mmn == "02") $mm1n="ГґГҐГўГ°Г Г«Гї";
+if ($mmn == "03") $mm1n="Г¬Г Г°ГІГ ";
+if ($mmn == "04") $mm1n="Г ГЇГ°ГҐГ«Гї";
+if ($mmn == "05") $mm1n="Г¬Г Гї";
+if ($mmn == "06") $mm1n="ГЁГѕГ­Гї";
+if ($mmn == "07") $mm1n="ГЁГѕГ«Гї";
+if ($mmn == "08") $mm1n="Г ГўГЈГіГ±ГІГ ";
+if ($mmn == "09") $mm1n="Г±ГҐГ­ГІГїГЎГ°Гї";
+if ($mmn == "10") $mm1n="Г®ГЄГІГїГЎГ°Гї";
+if ($mmn == "11") $mm1n="Г­Г®ГїГЎГ°Гї";
+if ($mmn == "12") $mm1n="Г¤ГҐГЄГ ГЎГ°Гї";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -380,9 +400,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn_day,11,5); // Время 
+$hours = substr($dtn_day,11,5); // Г‚Г°ГҐГ¬Гї 
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' г. '.$hours.'</span>'; // Конечный вид строки
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ГЈ. '.$hours.'</span>'; // ГЉГ®Г­ГҐГ·Г­Г»Г© ГўГЁГ¤ Г±ГІГ°Г®ГЄГЁ
 
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/', '/\[/', '/\]/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '', '', '');
@@ -395,7 +415,7 @@ echo '<div class="block_title"><span class="title"><a href="'.$new_day[page].'_s
  echo '<span style="color: #777">';
  if ($new_day['page'] == 'news') {	$newvid = mysql_query("SELECT * FROM host1409556_barysh.news_eparhia WHERE data = '$dtn_day'");
  $newvid = mysql_fetch_array($newvid); 
- if ($newvid['video']) echo ' (+ Видео)';
+ if ($newvid['video']) echo ' (+ Г‚ГЁГ¤ГҐГ®)';
   echo ' <img src="IMG/views.png" /> '.$newvid['views'].'</span>';
 }
 if ($new_day['page'] == 'anons') {	$newvid = mysql_query("SELECT * FROM host1409556_barysh.anons WHERE data = '$dtn_day'");
@@ -418,13 +438,13 @@ $page_news_day = $new_day[page];
 </div>
 <!----------------------------------------------------------
 
-<div style="text-align:center; margin: 24px 0;"><a href="http://sobor.patriarchia.ru/"><img src="http://www.patriarchia.ru/images/sobor/Arch_sobor2017_580.gif" alt="Архиерейский Собор Русской Православной Церкви 2017 г." title="Архиерейский Собор Русской Православной Церкви 2017 г." style="padding-right: 5%;"></a></div>
+ <? 
 ------------------------------------------------------------->
 
 <br />
 
 <div class="index_block">
-<h2><a href="news.php">Новости епархии</a></h2>
+<h2><a href="news.php">ГЌГ®ГўГ®Г±ГІГЁ ГҐГЇГ Г°ГµГЁГЁ</a></h2>
 <br />
 
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
@@ -434,23 +454,23 @@ $page_news_day = $new_day[page];
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[data]; 
-$yyn = substr($dtn,0,4); // Год
-$mmn = substr($dtn,5,2); // Месяц
-$ddn = substr($dtn,8,2); // День
+$yyn = substr($dtn,0,4); // ГѓГ®Г¤
+$mmn = substr($dtn,5,2); // ГЊГҐГ±ГїГ¶
+$ddn = substr($dtn,8,2); // Г„ГҐГ­Гј
 
-// Переназначаем переменные
-if ($mmn == "01") $mm1n="января";
-if ($mmn == "02") $mm1n="февраля";
-if ($mmn == "03") $mm1n="марта";
-if ($mmn == "04") $mm1n="апреля";
-if ($mmn == "05") $mm1n="мая";
-if ($mmn == "06") $mm1n="июня";
-if ($mmn == "07") $mm1n="июля";
-if ($mmn == "08") $mm1n="августа";
-if ($mmn == "09") $mm1n="сентября";
-if ($mmn == "10") $mm1n="октября";
-if ($mmn == "11") $mm1n="ноября";
-if ($mmn == "12") $mm1n="декабря";
+// ГЏГҐГ°ГҐГ­Г Г§Г­Г Г·Г ГҐГ¬ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
+if ($mmn == "01") $mm1n="ГїГ­ГўГ Г°Гї";
+if ($mmn == "02") $mm1n="ГґГҐГўГ°Г Г«Гї";
+if ($mmn == "03") $mm1n="Г¬Г Г°ГІГ ";
+if ($mmn == "04") $mm1n="Г ГЇГ°ГҐГ«Гї";
+if ($mmn == "05") $mm1n="Г¬Г Гї";
+if ($mmn == "06") $mm1n="ГЁГѕГ­Гї";
+if ($mmn == "07") $mm1n="ГЁГѕГ«Гї";
+if ($mmn == "08") $mm1n="Г ГўГЈГіГ±ГІГ ";
+if ($mmn == "09") $mm1n="Г±ГҐГ­ГІГїГЎГ°Гї";
+if ($mmn == "10") $mm1n="Г®ГЄГІГїГЎГ°Гї";
+if ($mmn == "11") $mm1n="Г­Г®ГїГЎГ°Гї";
+if ($mmn == "12") $mm1n="Г¤ГҐГЄГ ГЎГ°Гї";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -462,9 +482,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Время 
+$hours = substr($dtn,11,5); // Г‚Г°ГҐГ¬Гї 
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' г. '.$hours.'</span>'; // Конечный вид строки
+ <? 
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '');
 
@@ -472,7 +492,7 @@ $ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' г. '.$hours.'</span>'; 
 
 echo '<div style="margin-left: 5px;"><span class="title"><a href="news_show.php?data='.$news[data].'">'.$news[tema].'</a></span><br />'.$ddttn;
  echo '<span style="color: #777">';
- if ($news['video']) echo ' (+ Видео)';
+ if ($news['video']) echo ' (+ Г‚ГЁГ¤ГҐГ®)';
  echo ' <img src="IMG/views.png" /> '.$news['views'].'</span>';
 
 echo '</div><br /><div style="float: left; border-bottom: 1px #D7D7D7 solid; margin-bottom: 5px">';
@@ -486,7 +506,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 </div>	
 
 <div class="index_block">
-<h2><a href="pub.php">Публикации</a></h2>
+<h2><a href="pub.php">ГЏГіГЎГ«ГЁГЄГ Г¶ГЁГЁ</a></h2>
 <br />
 
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
@@ -496,23 +516,23 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 $pub = mysql_fetch_array($pub_all); 
 
 $dtn = $pub[data]; 
-$yyn = substr($dtn,0,4); // Год
-$mmn = substr($dtn,5,2); // Месяц
-$ddn = substr($dtn,8,2); // День
+$yyn = substr($dtn,0,4); // ГѓГ®Г¤
+$mmn = substr($dtn,5,2); // ГЊГҐГ±ГїГ¶
+$ddn = substr($dtn,8,2); // Г„ГҐГ­Гј
 
-// Переназначаем переменные
-if ($mmn == "01") $mm1n="января";
-if ($mmn == "02") $mm1n="февраля";
-if ($mmn == "03") $mm1n="марта";
-if ($mmn == "04") $mm1n="апреля";
-if ($mmn == "05") $mm1n="мая";
-if ($mmn == "06") $mm1n="июня";
-if ($mmn == "07") $mm1n="июля";
-if ($mmn == "08") $mm1n="августа";
-if ($mmn == "09") $mm1n="сентября";
-if ($mmn == "10") $mm1n="октября";
-if ($mmn == "11") $mm1n="ноября";
-if ($mmn == "12") $mm1n="декабря";
+// ГЏГҐГ°ГҐГ­Г Г§Г­Г Г·Г ГҐГ¬ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
+if ($mmn == "01") $mm1n="ГїГ­ГўГ Г°Гї";
+if ($mmn == "02") $mm1n="ГґГҐГўГ°Г Г«Гї";
+if ($mmn == "03") $mm1n="Г¬Г Г°ГІГ ";
+if ($mmn == "04") $mm1n="Г ГЇГ°ГҐГ«Гї";
+if ($mmn == "05") $mm1n="Г¬Г Гї";
+if ($mmn == "06") $mm1n="ГЁГѕГ­Гї";
+if ($mmn == "07") $mm1n="ГЁГѕГ«Гї";
+if ($mmn == "08") $mm1n="Г ГўГЈГіГ±ГІГ ";
+if ($mmn == "09") $mm1n="Г±ГҐГ­ГІГїГЎГ°Гї";
+if ($mmn == "10") $mm1n="Г®ГЄГІГїГЎГ°Гї";
+if ($mmn == "11") $mm1n="Г­Г®ГїГЎГ°Гї";
+if ($mmn == "12") $mm1n="Г¤ГҐГЄГ ГЎГ°Гї";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -524,9 +544,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Время 
+$hours = substr($dtn,11,5); // Г‚Г°ГҐГ¬Гї 
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' г. '.$hours.'</span>'; // Конечный вид строки
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ГЈ. '.$hours.'</span>'; // ГЉГ®Г­ГҐГ·Г­Г»Г© ГўГЁГ¤ Г±ГІГ°Г®ГЄГЁ
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '');
 
@@ -543,7 +563,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 
 </div>	
 <!-- <div class="index_block_padre">
-<h2><a href="doks.php">Документы</a></h2>
+<h2><a href="doks.php">Г„Г®ГЄГіГ¬ГҐГ­ГІГ»</a></h2>
 <br />
 
  <?   
@@ -553,23 +573,23 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[date]; 
-$yyn = substr($dtn,0,4); // Год
-$mmn = substr($dtn,5,2); // Месяц
-$ddn = substr($dtn,8,2); // День
+$yyn = substr($dtn,0,4); // ГѓГ®Г¤
+$mmn = substr($dtn,5,2); // ГЊГҐГ±ГїГ¶
+$ddn = substr($dtn,8,2); // Г„ГҐГ­Гј
 
-// Переназначаем переменные
-if ($mmn == "01") $mm1n="января";
-if ($mmn == "02") $mm1n="февраля";
-if ($mmn == "03") $mm1n="марта";
-if ($mmn == "04") $mm1n="апреля";
-if ($mmn == "05") $mm1n="мая";
-if ($mmn == "06") $mm1n="июня";
-if ($mmn == "07") $mm1n="июля";
-if ($mmn == "08") $mm1n="августа";
-if ($mmn == "09") $mm1n="сентября";
-if ($mmn == "10") $mm1n="октября";
-if ($mmn == "11") $mm1n="ноября";
-if ($mmn == "12") $mm1n="декабря";
+// ГЏГҐГ°ГҐГ­Г Г§Г­Г Г·Г ГҐГ¬ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
+if ($mmn == "01") $mm1n="ГїГ­ГўГ Г°Гї";
+if ($mmn == "02") $mm1n="ГґГҐГўГ°Г Г«Гї";
+if ($mmn == "03") $mm1n="Г¬Г Г°ГІГ ";
+if ($mmn == "04") $mm1n="Г ГЇГ°ГҐГ«Гї";
+if ($mmn == "05") $mm1n="Г¬Г Гї";
+if ($mmn == "06") $mm1n="ГЁГѕГ­Гї";
+if ($mmn == "07") $mm1n="ГЁГѕГ«Гї";
+if ($mmn == "08") $mm1n="Г ГўГЈГіГ±ГІГ ";
+if ($mmn == "09") $mm1n="Г±ГҐГ­ГІГїГЎГ°Гї";
+if ($mmn == "10") $mm1n="Г®ГЄГІГїГЎГ°Гї";
+if ($mmn == "11") $mm1n="Г­Г®ГїГЎГ°Гї";
+if ($mmn == "12") $mm1n="Г¤ГҐГЄГ ГЎГ°Гї";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -581,17 +601,17 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$ddttn = $ddn.' '.$mm1n.' '.$yyn.' г.'; // Конечный вид строки
+$ddttn = $ddn.' '.$mm1n.' '.$yyn.' ГЈ.'; // ГЉГ®Г­ГҐГ·Г­Г»Г© ГўГЁГ¤ Г±ГІГ°Г®ГЄГЁ
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/\{/', '/\}/');
 	$replace = array ('${2}', '</p><p>', '', '');
 
 	$text = preg_replace($patterns, $replace, $news[text]);
 echo '<div style="margin-left: 5px;"><span class="title">';
-if ($news[tematika] == 'ukaz') echo 'Указ';
-if ($news[tematika] == 'raspor') echo 'Распоряжение';
-if ($news[tematika] == 'cirk') echo 'Циркуляр';
-if ($news[tematika] == 'udostoverenie') echo 'Удостоверение о рукоположении в сан '.$news[name];
-echo ' № '.$news[nomer].' от '.$ddttn.'</span><br />';
+if ($news[tematika] == 'ukaz') echo 'Г“ГЄГ Г§';
+if ($news[tematika] == 'raspor') echo 'ГђГ Г±ГЇГ®Г°ГїГ¦ГҐГ­ГЁГҐ';
+if ($news[tematika] == 'cirk') echo 'Г–ГЁГ°ГЄГіГ«ГїГ°';
+if ($news[tematika] == 'udostoverenie') echo 'Г“Г¤Г®Г±ГІГ®ГўГҐГ°ГҐГ­ГЁГҐ Г® Г°ГіГЄГ®ГЇГ®Г«Г®Г¦ГҐГ­ГЁГЁ Гў Г±Г Г­ '.$news[name];
+echo ' В№ '.$news[nomer].' Г®ГІ '.$ddttn.'</span><br />';
 if ($news[tematika] != 'udostoverenie') echo '<div style="padding-left: 25%; float:right; text-align: right; margin-top: 5px; margin-bottom: 5px"><i>'.$news[name].'</i></div><br /><br />';
 echo '</div><div style="border-bottom: 1px #D7D7D7 solid; margin-top: 5px; margin-bottom: 5px">';
 
@@ -600,7 +620,7 @@ if (preg_match_all ("/^[^\t]{350}/", $news[text], $massiv_news)) {
 	$replace = array ('${2}', '', '');
 
 	$text = preg_replace($patterns, $replace, $massiv_news[0][0]);
-  $text = $text.'... <a href="doks_show.php?tip='.$news[tematika].'&data='.$news[date].'">(читать далее)</a>';
+  $text = $text.'... <a href="doks_show.php?tip='.$news[tematika].'&data='.$news[date].'">(Г·ГЁГІГ ГІГј Г¤Г Г«ГҐГҐ)</a>';
   	$text = preg_replace('/\n/', '</p><p>', $text);
 
   }
@@ -613,7 +633,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 </div>	 -->
 <div class="index_block_padre">
 
-<h2><a href="video.php">Видео</a></h2>
+<h2><a href="video.php">Г‚ГЁГ¤ГҐГ®</a></h2>
 <br />
 
 <div style="text-align: center">
@@ -623,23 +643,23 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 {
 $vid = mysql_fetch_array($vid_all); 
 $dtn = $vid[data]; 
-$yyn = substr($dtn,0,4); // Год
-$mmn = substr($dtn,5,2); // Месяц
-$ddn = substr($dtn,8,2); // День
+$yyn = substr($dtn,0,4); // ГѓГ®Г¤
+$mmn = substr($dtn,5,2); // ГЊГҐГ±ГїГ¶
+$ddn = substr($dtn,8,2); // Г„ГҐГ­Гј
 
-// Переназначаем переменные
-if ($mmn == "01") $mm1n="января";
-if ($mmn == "02") $mm1n="февраля";
-if ($mmn == "03") $mm1n="марта";
-if ($mmn == "04") $mm1n="апреля";
-if ($mmn == "05") $mm1n="мая";
-if ($mmn == "06") $mm1n="июня";
-if ($mmn == "07") $mm1n="июля";
-if ($mmn == "08") $mm1n="августа";
-if ($mmn == "09") $mm1n="сентября";
-if ($mmn == "10") $mm1n="октября";
-if ($mmn == "11") $mm1n="ноября";
-if ($mmn == "12") $mm1n="декабря";
+// ГЏГҐГ°ГҐГ­Г Г§Г­Г Г·Г ГҐГ¬ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
+if ($mmn == "01") $mm1n="ГїГ­ГўГ Г°Гї";
+if ($mmn == "02") $mm1n="ГґГҐГўГ°Г Г«Гї";
+if ($mmn == "03") $mm1n="Г¬Г Г°ГІГ ";
+if ($mmn == "04") $mm1n="Г ГЇГ°ГҐГ«Гї";
+if ($mmn == "05") $mm1n="Г¬Г Гї";
+if ($mmn == "06") $mm1n="ГЁГѕГ­Гї";
+if ($mmn == "07") $mm1n="ГЁГѕГ«Гї";
+if ($mmn == "08") $mm1n="Г ГўГЈГіГ±ГІГ ";
+if ($mmn == "09") $mm1n="Г±ГҐГ­ГІГїГЎГ°Гї";
+if ($mmn == "10") $mm1n="Г®ГЄГІГїГЎГ°Гї";
+if ($mmn == "11") $mm1n="Г­Г®ГїГЎГ°Гї";
+if ($mmn == "12") $mm1n="Г¤ГҐГЄГ ГЎГ°Гї";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -651,9 +671,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Время 
+$hours = substr($dtn,11,5); // Г‚Г°ГҐГ¬Гї 
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' г. '.$hours.'</span>'; // Конечный вид строки
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ГЈ. '.$hours.'</span>'; // ГЉГ®Г­ГҐГ·Г­Г»Г© ГўГЁГ¤ Г±ГІГ°Г®ГЄГЁ
 $news_all_wer = mysql_query("SELECT * FROM host1409556_barysh.news_eparhia WHERE video = '$vid[kod]'");
 $news_wer = mysql_fetch_array($news_all_wer); 
 	$patterns = array ('/width="46\%"/');
