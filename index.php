@@ -9,34 +9,52 @@ $name_user=$_SESSION['name_user'];
 <?
 include 'head.php';
 ?>
- mysql_connect("localhost", "host1409556", "0f7cd928");
+<title> </title>
 
-        $news_day = mysql_query("SELECT * FROM host1409556_barysh.news_day");
+</head>
+<body>
+
+<div style="box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+<?php
+include 'golova.php';
+include 'menu.php';
+include 'function.php';
+?>
+
+<div id="content_right" style="margin-top: 10px"> 
+<div style="text-align:center"><a href="//www.yandex.ru/?add=178939&from=promocode">    <span style="color:red"></span><span style="color:#000"></span></a></div><br />
+<?
+ mysql_connect("localhost", "host1409556", "0f7cd928"); 
+mysql_query("SET NAMES 'cp1251'");
+
+	$news_day = mysql_query("SELECT * FROM host1409556_barysh.news_day");
 
         $new_day = mysql_fetch_array($news_day);
 $dtn_day = $new_day['data'];
 
+        #######################################
         $data_today = Date("Y.m.d");
         $chas_today = Date("H:i");
         $god_today = Date("Y");
 
-        $cache_dir = __DIR__.'/cache';
+        $cache_dir = dirname(__FILE__).'/cache';
         $cache_lifetime = 600;
-        if (!is_dir($cache_dir)) {
-                mkdir($cache_dir, 0755, true);
-        }
-
-        $sidebar_cache_file = $cache_dir.'/sidebar-'.$data_today.'.html';
+        $cache_file = $cache_dir.'/sidebar-'.$data_today.'.html';
         $sidebar_html = '';
-        $need_sidebar_refresh = true;
-        if (file_exists($sidebar_cache_file) && (time() - filemtime($sidebar_cache_file)) < $cache_lifetime) {
-                $sidebar_html = file_get_contents($sidebar_cache_file);
-                if ($sidebar_html !== false) {
-                        $need_sidebar_refresh = false;
+        $cache_ready = false;
+
+        if (is_dir($cache_dir) || @mkdir($cache_dir, 0755, true)) {
+                if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_lifetime) {
+                        $sidebar_html = file_get_contents($cache_file);
+                        if ($sidebar_html !== false && $sidebar_html !== '') {
+                                $cache_ready = true;
+                        } else {
+                                $sidebar_html = '';
+                        }
                 }
         }
 
-        if ($need_sidebar_refresh) {
+        if (!$cache_ready) {
                 ob_start();
 
         $hod_all = mysql_query("SELECT * FROM host1409556_barysh.krest_hod_$god_today where data = '$data_today' ORDER BY pribyv ASC");
@@ -61,86 +79,100 @@ $dtn_day = $new_day['data'];
                 echo '<hr /><div style="text-align: center"><a href="hod.php?year='.$god_today.'#'.$data_today.'">   </a></div><br /></div><br /><br />';
 
         }
+#######################################
 
+#######################################
         $day_today = Date("d");
         $month_today = Date("m");
 
- if ($month_today == '01') {$mon2 = '';}
- if ($month_today == '02') {$mon2 = '';}
- if ($month_today == '03') {$mon2 = '';}
- if ($month_today == '04') {$mon2 = '';}
- if ($month_today == '05') {$mon2 = '';}
- if ($month_today == '06') {$mon2 = '';}
- if ($month_today == '07') {$mon2 = '';}
- if ($month_today == '08') {$mon2 = '';}
- if ($month_today == '09') {$mon2 = '';}
- if ($month_today == '10') {$mon2 = '';}
- if ($month_today == '11') {$mon2 = '';}
- if ($month_today == '12') {$mon2 = '';}
+ if ($month_today == '01') {$mon2 = ''; }
+ if ($month_today == '02') {$mon2 = ''; }
+ if ($month_today == '03') {$mon2 = ''; }
+ if ($month_today == '04') {$mon2 = ''; }
+ if ($month_today == '05') {$mon2 = ''; }
+ if ($month_today == '06') {$mon2 = ''; }
+ if ($month_today == '07') {$mon2 = ''; }
+ if ($month_today == '08') {$mon2 = ''; }
+ if ($month_today == '09') {$mon2 = ''; }
+ if ($month_today == '10') {$mon2 = ''; }
+ if ($month_today == '11') {$mon2 = ''; }
+ if ($month_today == '12') {$mon2 = ''; }
+
+$dd_today = $day_today;
+if ($day_today == "01") $dd_today="1";
+if ($day_today == "02") $dd_today="2";
+if ($day_today == "03") $dd_today="3";
+if ($day_today == "04") $dd_today="4";
+if ($day_today == "05") $dd_today="5";
+if ($day_today == "06") $dd_today="6";
+if ($day_today == "07") $dd_today="7";
+if ($day_today == "08") $dd_today="8";
+if ($day_today == "09") $dd_today="9";
+        $text_arhi = '';
+        $text_cal = '';
+        $text_cal_prest = '';
         $arhi_rozd = '12.06';
         $arhi_hiro = '10.28';
         $arhi_postrig = '11.30';
         $arhi_angel = '12.02';
         $arhi_text = '<div style="margin-bottom: 5px"><a href="/arhierei.php" target="_blank">    </a> - ';
 
+if ($month_today.'.'.$day_today == $arhi_rozd) {
         $yy = '1963';
         $res = $god_today - $yy;
         $text_arhi = '  <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
         }
+if ($month_today.'.'.$day_today == $arhi_hiro) {
         $yy = '2012';
         $res = $god_today - $yy;
         $text_arhi = '  <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
         }
+if ($month_today.'.'.$day_today == $arhi_postrig) {
         $yy = '1996';
         $res = $god_today - $yy;
         $text_arhi = '  <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
         }
+if ($month_today.'.'.$day_today == $arhi_angel) {
         $text_arhi .= ' </div>';
         }
-
-        $calendar_events = array(
-                'rozd' => array(),
-                'diak' => array(),
-                'presv' => array(),
-                'monah' => array()
-        );
-        $angel_events = array();
-        $day_month_pattern = $month_today.'.'.$day_today;
-        $angel_pattern = $day_today.'.'.$month_today;
-        $klirik_all = mysql_query("SELECT id, name, san, rozd, diak, presv, monah, angel FROM host1409556_barysh.klir WHERE status LIKE '' AND (rozd LIKE '%$day_month_pattern' OR diak LIKE '%$day_month_pattern' OR presv LIKE '%$day_month_pattern' OR monah LIKE '%$day_month_pattern' OR angel LIKE '%$angel_pattern%') ORDER by name ASC");
-        if ($klirik_all) {
-                while ($klirik = mysql_fetch_assoc($klirik_all)) {
-                        foreach (array('rozd', 'diak', 'presv', 'monah') as $field) {
-                                if (!empty($klirik[$field]) && substr($klirik[$field], 5) === $day_month_pattern) {
-                                        $yy = substr($klirik[$field], 0, 4);
-                                        $res = $god_today - $yy;
-                                        $calendar_events[$field][] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> -   <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
-                                }
-                        }
-                        if (!empty($klirik['angel']) && strpos($klirik['angel'], $angel_pattern) !== false) {
-                                $angel_events[] = '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].' '.$klirik['name'].'</a> -  </div>';
-                        }
-                }
-        }
-
-        $text_cal = '';
-        foreach (array('rozd', 'diak', 'presv', 'monah') as $field) {
-                if (!empty($calendar_events[$field])) {
-                        $text_cal .= implode('', $calendar_events[$field]);
-                }
-        }
-        if (!empty($angel_events)) {
-                $text_cal .= implode('', $angel_events);
-        }
-
-        $text_cal_prest = '';
+        $klirik_all = mysql_query("SELECT id, name, san, rozd FROM host1409556_barysh.klir WHERE rozd LIKE '%$month_today.$day_today' AND status LIKE '' ORDER by name ASC");
+while($klirik = mysql_fetch_array($klirik_all))
+{
+        $yy = substr($klirik['rozd'],0,4);
+        $res = $god_today - $yy;
+        $text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].''.$klirik['name'].'</a> -   <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+}
+        $klirik_all = mysql_query("SELECT id, name, san, diak FROM host1409556_barysh.klir WHERE diak LIKE '%$month_today.$day_today' AND status LIKE '' ORDER by name ASC");
+while($klirik = mysql_fetch_array($klirik_all))
+{
+        $yy = substr($klirik['diak'],0,4);
+        $res = $god_today - $yy;
+        $text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].''.$klirik['name'].'</a> -   <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+}
+        $klirik_all = mysql_query("SELECT id, name, san, presv FROM host1409556_barysh.klir WHERE presv LIKE '%$month_today.$day_today' AND status LIKE '' ORDER by name ASC");
+while($klirik = mysql_fetch_array($klirik_all))
+{
+        $yy = substr($klirik['presv'],0,4);
+        $res = $god_today - $yy;
+        $text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].''.$klirik['name'].'</a> -   <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+}
+        $klirik_all = mysql_query("SELECT id, name, san, monah FROM host1409556_barysh.klir WHERE monah LIKE '%$month_today.$day_today' AND status LIKE '' ORDER by name ASC");
+while($klirik = mysql_fetch_array($klirik_all))
+{
+        $yy = substr($klirik['monah'],0,4);
+        $res = $god_today - $yy;
+        $text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].''.$klirik['name'].'</a> -   <b>'.$res.' '.yearRus($res, '', '', '').'</b></div>';
+}
+        $klirik_all = mysql_query("SELECT id, name, san FROM host1409556_barysh.klir WHERE angel LIKE '%$day_today.$month_today%' AND status LIKE '' ORDER by name ASC");
+while($klirik = mysql_fetch_array($klirik_all))
+{
+        $text_cal .= '<div style="margin-bottom: 5px"><a href="/klirik.php?id='.$klirik['id'].'" target="_blank">'.$klirik['san'].''.$klirik['name'].'</a> -  </div>';
+}
         $prihod_all = mysql_query("SELECT id, name FROM host1409556_barysh.prihods WHERE angel LIKE '%$day_today.$month_today%' ORDER by name ASC");
-        if ($prihod_all) {
-                while ($prihod = mysql_fetch_array($prihod_all))
-                {
-                        $text_cal_prest .= '<div style="margin-bottom: 5px"><a href="/prihod.php?id='.$prihod['id'].'" target="_blank">'.$prihod['name'].'</a></div>';
-                }
-        }
+while($prihod = mysql_fetch_array($prihod_all))
+{
+        $text_cal_prest .= '<div style="margin-bottom: 5px"><a href="/prihod.php?id='.$prihod['id'].'" target="_blank">'.$prihod['name'].'</a></div>';
+}
 
         echo '<div style="background: #fff; width: 90%; border: 1px solid #D7D7D7;box-shadow:2px 3px 5px #aaa; padding: 5px 10px">';
         echo '<div class="title" style="text-align: center"><b> </b></div><hr />';
@@ -150,52 +182,21 @@ $dtn_day = $new_day['data'];
         if ($text_cal_prest) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px"> </h2>'.$text_cal_prest.'</div>';
         if (empty($text_cal) && empty($text_cal_prest) && empty($text_arhi)) {
                 echo '<p>  </p><br />';
+}
         echo '<hr /><div style="text-align: center"><a style="color: #666" href="/kalendar.php?month='.$month_today.'"> </a></div><br /></div><br /><br />';
+#######################################
 
+                $sidebar_html = ob_get_clean();
+                if ($sidebar_html === false) {
+                        $sidebar_html = '';
+                }
 
-
-<?
-        $raspisanie_rows = array();
-        $news_all = mysql_query("SELECT * FROM host1409556_barysh.raspisanie where data between '$data_today' and '9999.12.31' ORDER BY data ASC, (text+0) ASC LIMIT 3");
-        if ($news_all) {
-                while ($news = mysql_fetch_assoc($news_all)) {
-                        $raspisanie_rows[] = $news;
+                if ($sidebar_html !== '' && (is_dir($cache_dir) || @mkdir($cache_dir, 0755, true))) {
+                        file_put_contents($cache_file, $sidebar_html);
                 }
         }
 
-        $news_r = isset($raspisanie_rows[0]) ? $raspisanie_rows[0] : null;
-        if (!empty($news_r['text'])) echo '<h2 style="border-bottom: 5px solid #E6E0C6;"><a style="color: #7A6D42;border-bottom: 5px solid #E6E0C6;" href="raspisanie.php"> </a></h2><br />';
-
-        foreach ($raspisanie_rows as $news) {
-                echo '<div class="box_arhi">
-
-<h3>'.$news['data_text'].' - '.$news['nedel'].'</h3>';
-                $patterns = array ('/
-/', '/(\d{1,2}:\d{2})/');
-                $replace = array ('</p><p>', '<b>${1}</b>');
-                $text = preg_replace($patterns, $replace, $news['text']);
-        }
-        if (!empty($news_r['text'])) echo '<br />';
-        $sidebar_html = ob_get_clean();
-        file_put_contents($sidebar_cache_file, $sidebar_html);
-        }
-
         echo $sidebar_html;
-
-
- <? 
-}
-	
-	echo '<div style="background: #fff; width: 90%; border: 1px solid #D7D7D7;box-shadow:2px 3px 5px #aaa; padding: 5px 10px">';
-	echo '<div class="title" style="text-align: center"><b>Êàëåíäàðü åïàðõèè</b></div><hr />';
-	echo '<div style="color:red;font-size: 110%; text-align: center; ">'.$dd_today.' '.$mon2.'</div><br />'; 	
-	if ($text_arhi) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">Àðõèåðåé</h2>'.$arhi_text.$text_arhi.'</div>';
-	if ($text_cal) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">Äóõîâåíñòâî</h2>'.$text_cal.'</div>';
-	if ($text_cal_prest) echo '<div id="calendar"><h2 style="padding-left: 5px; margin-bottom: 5px">Ïðåñòîëüíûé ïðàçäíèê</h2>'.$text_cal_prest.'</div>';
-	if (empty($text_cal) && empty($text_cal_prest) && empty($text_arhi)) {
-		echo '<p>Ñåãîäíÿ ñîáûòèé íåò</p><br />';
-}
-	echo '<hr /><div style="text-align: center"><a style="color: #666" href="/kalendar.php?month='.$month_today.'">Âåñü êàëåíäàðü</a></div><br /></div><br /><br />';
 #######################################
 ?>
 <!--<div style="text-align: center"><a href="pyatino.php" ><img style="width: 80%; margin: 0 auto" src="/IMG/pyatino.png" border="0" /></a><br /><br />
@@ -214,7 +215,7 @@ $dtn_day = $new_day['data'];
 <?	$news_all_r = mysql_query("SELECT * FROM host1409556_barysh.raspisanie where data between '$data_today' and '9999.12.31' ORDER BY data ASC LIMIT 1");
 
 $news_r = mysql_fetch_array($news_all_r); 
-if ($news_r[text]) echo '<h2 style="border-bottom: 5px solid #E6E0C6;"><a style="color: #7A6D42;border-bottom: 5px solid #E6E0C6;" href="raspisanie.php">Àðõèåðåéñêîå ñëóæåíèå</a></h2><br />';
+if ($news_r[text]) echo '<h2 style="border-bottom: 5px solid #E6E0C6;"><a style="color: #7A6D42;border-bottom: 5px solid #E6E0C6;" href="raspisanie.php"> </a></h2><br />';
 
 
 		$news_all = mysql_query("SELECT * FROM host1409556_barysh.raspisanie where data between '$data_today' and '9999.12.31' ORDER BY data ASC, (text+0) ASC LIMIT 3");
@@ -238,7 +239,7 @@ if ($news_r[text]) echo '<br />';
 
 ?>
 
-<h2 style=" border-bottom: 5px solid #F0D0C8;"><a style="color: #A35241;border-bottom: 5px solid #F0D0C8;" href="anons.php">Àíîíñû è îáúÿâëåíèÿ</a></h2>
+<h2 style=" border-bottom: 5px solid #F0D0C8;"><a style="color: #A35241;border-bottom: 5px solid #F0D0C8;" href="anons.php">  </a></h2>
 <br />
 
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
@@ -248,23 +249,23 @@ if ($news_r[text]) echo '<br />';
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[data]; 
-$yyn = substr($dtn,0,4); // Ãîä
-$mmn = substr($dtn,5,2); // Ìåñÿö
-$ddn = substr($dtn,8,2); // Äåíü
+$yyn = substr($dtn,0,4); // 
+$mmn = substr($dtn,5,2); // 
+$ddn = substr($dtn,8,2); // 
 
-// Ïåðåíàçíà÷àåì ïåðåìåííûå
-if ($mmn == "01") $mm1n="ÿíâ.";
-if ($mmn == "02") $mm1n="ôåâ.";
-if ($mmn == "03") $mm1n="ìàð.";
-if ($mmn == "04") $mm1n="àïð.";
-if ($mmn == "05") $mm1n="ìàÿ";
-if ($mmn == "06") $mm1n="èþí.";
-if ($mmn == "07") $mm1n="èþë.";
-if ($mmn == "08") $mm1n="àâã.";
-if ($mmn == "09") $mm1n="ñåí.";
-if ($mmn == "10") $mm1n="îêò.";
-if ($mmn == "11") $mm1n="íîÿá.";
-if ($mmn == "12") $mm1n="äåê.";
+//  
+if ($mmn == "01") $mm1n=".";
+if ($mmn == "02") $mm1n=".";
+if ($mmn == "03") $mm1n=".";
+if ($mmn == "04") $mm1n=".";
+if ($mmn == "05") $mm1n="";
+if ($mmn == "06") $mm1n=".";
+if ($mmn == "07") $mm1n=".";
+if ($mmn == "08") $mm1n=".";
+if ($mmn == "09") $mm1n=".";
+if ($mmn == "10") $mm1n=".";
+if ($mmn == "11") $mm1n=".";
+if ($mmn == "12") $mm1n=".";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -276,9 +277,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
- <? 
+$hours = substr($dtn,11,5); //  
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ã. '.$hours.'</span>'; // Êîíå÷íûé âèä ñòðîêè
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' . '.$hours.'</span>'; //   
 
 	$patterns = array ('/\n/');
 	$replace = array ('</p><p>');
@@ -292,7 +293,7 @@ echo '<p>'.$text.'</p></div><br />';
 ?>
 
 <br />
-<h2> <a href="slovo_padre.php">Ñëîâî àðõèïàñòûðÿ</a></h2>
+<h2> <a href="slovo_padre.php"> </a></h2>
 <br />
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
  	$news_all = mysql_query("SELECT * FROM host1409556_barysh.padre WHERE data != '$dtn_day' ORDER BY data DESC LIMIT 2");
@@ -301,23 +302,23 @@ echo '<p>'.$text.'</p></div><br />';
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[data]; 
-$yyn = substr($dtn,0,4); // Ãîä
-$mmn = substr($dtn,5,2); // Ìåñÿö
-$ddn = substr($dtn,8,2); // Äåíü
+$yyn = substr($dtn,0,4); // 
+$mmn = substr($dtn,5,2); // 
+$ddn = substr($dtn,8,2); // 
 
-// Ïåðåíàçíà÷àåì ïåðåìåííûå
-if ($mmn == "01") $mm1n="ÿíâàðÿ";
-if ($mmn == "02") $mm1n="ôåâðàëÿ";
-if ($mmn == "03") $mm1n="ìàðòà";
-if ($mmn == "04") $mm1n="àïðåëÿ";
-if ($mmn == "05") $mm1n="ìàÿ";
-if ($mmn == "06") $mm1n="èþíÿ";
-if ($mmn == "07") $mm1n="èþëÿ";
-if ($mmn == "08") $mm1n="àâãóñòà";
-if ($mmn == "09") $mm1n="ñåíòÿáðÿ";
-if ($mmn == "10") $mm1n="îêòÿáðÿ";
-if ($mmn == "11") $mm1n="íîÿáðÿ";
-if ($mmn == "12") $mm1n="äåêàáðÿ";
+//  
+if ($mmn == "01") $mm1n="";
+if ($mmn == "02") $mm1n="";
+if ($mmn == "03") $mm1n="";
+if ($mmn == "04") $mm1n="";
+if ($mmn == "05") $mm1n="";
+if ($mmn == "06") $mm1n="";
+if ($mmn == "07") $mm1n="";
+if ($mmn == "08") $mm1n="";
+if ($mmn == "09") $mm1n="";
+if ($mmn == "10") $mm1n="";
+if ($mmn == "11") $mm1n="";
+if ($mmn == "12") $mm1n="";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -329,15 +330,15 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Âðåìÿ 
+$hours = substr($dtn,11,5); //  
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ã. '.$hours.'</span>'; // Êîíå÷íûé âèä ñòðîêè
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' . '.$hours.'</span>'; //   
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/', '/\[/', '/\]/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '', '', '');
 
 	$news[text] = preg_replace($patterns, $replace, $news[text]);
 	 if (preg_match_all ("/[^\t]{250}/", $news[text], $massiv_news)) {
-	   $text = $massiv_news[0][0].'... <a href="slovo_padre_show.php?data='.$news[data].'">(÷èòàòü äàëåå)</a>';}
+	   $text = $massiv_news[0][0].'... <a href="slovo_padre_show.php?data='.$news[data].'">( )</a>';}
 	   else $text = $news[text];
 
 
@@ -354,7 +355,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 
 
 <br />
-<!--<h2>Êàðòà ïðèõîäîâ</h2>
+<!--<h2> </h2>
 <br />
 <a href="http://www.barysh-eparhia.ru/map.php"><CENTER><img style="border: #BEC7BE 1px solid; width: 75%; margin: 0 auto" src="IMG/map.png" /></CENTER></a><br />
 -->
@@ -369,26 +370,26 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 <div id="new_day">
 
  <?   
-  ############################ ÍÎÂÎÑÒÜ ÄÍß 
+  ############################   
  
 
-$yyn = substr($dtn_day,0,4); // Ãîä
-$mmn = substr($dtn_day,5,2); // Ìåñÿö
-$ddn = substr($dtn_day,8,2); // Äåíü
+$yyn = substr($dtn_day,0,4); // 
+$mmn = substr($dtn_day,5,2); // 
+$ddn = substr($dtn_day,8,2); // 
 
-// Ïåðåíàçíà÷àåì ïåðåìåííûå
-if ($mmn == "01") $mm1n="ÿíâàðÿ";
-if ($mmn == "02") $mm1n="ôåâðàëÿ";
-if ($mmn == "03") $mm1n="ìàðòà";
-if ($mmn == "04") $mm1n="àïðåëÿ";
-if ($mmn == "05") $mm1n="ìàÿ";
-if ($mmn == "06") $mm1n="èþíÿ";
-if ($mmn == "07") $mm1n="èþëÿ";
-if ($mmn == "08") $mm1n="àâãóñòà";
-if ($mmn == "09") $mm1n="ñåíòÿáðÿ";
-if ($mmn == "10") $mm1n="îêòÿáðÿ";
-if ($mmn == "11") $mm1n="íîÿáðÿ";
-if ($mmn == "12") $mm1n="äåêàáðÿ";
+//  
+if ($mmn == "01") $mm1n="";
+if ($mmn == "02") $mm1n="";
+if ($mmn == "03") $mm1n="";
+if ($mmn == "04") $mm1n="";
+if ($mmn == "05") $mm1n="";
+if ($mmn == "06") $mm1n="";
+if ($mmn == "07") $mm1n="";
+if ($mmn == "08") $mm1n="";
+if ($mmn == "09") $mm1n="";
+if ($mmn == "10") $mm1n="";
+if ($mmn == "11") $mm1n="";
+if ($mmn == "12") $mm1n="";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -400,9 +401,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn_day,11,5); // Âðåìÿ 
+$hours = substr($dtn_day,11,5); //  
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ã. '.$hours.'</span>'; // Êîíå÷íûé âèä ñòðîêè
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' . '.$hours.'</span>'; //   
 
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/', '/\[/', '/\]/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '', '', '');
@@ -415,7 +416,7 @@ echo '<div class="block_title"><span class="title"><a href="'.$new_day[page].'_s
  echo '<span style="color: #777">';
  if ($new_day['page'] == 'news') {	$newvid = mysql_query("SELECT * FROM host1409556_barysh.news_eparhia WHERE data = '$dtn_day'");
  $newvid = mysql_fetch_array($newvid); 
- if ($newvid['video']) echo ' (+ Âèäåî)';
+ if ($newvid['video']) echo ' (+ )';
   echo ' <img src="IMG/views.png" /> '.$newvid['views'].'</span>';
 }
 if ($new_day['page'] == 'anons') {	$newvid = mysql_query("SELECT * FROM host1409556_barysh.anons WHERE data = '$dtn_day'");
@@ -438,13 +439,13 @@ $page_news_day = $new_day[page];
 </div>
 <!----------------------------------------------------------
 
- <? 
+<div style="text-align:center; margin: 24px 0;"><a href="http://sobor.patriarchia.ru/"><img src="http://www.patriarchia.ru/images/sobor/Arch_sobor2017_580.gif" alt="     2017 ." title="     2017 ." style="padding-right: 5%;"></a></div>
 ------------------------------------------------------------->
 
 <br />
 
 <div class="index_block">
-<h2><a href="news.php">Íîâîñòè åïàðõèè</a></h2>
+<h2><a href="news.php"> </a></h2>
 <br />
 
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
@@ -454,23 +455,23 @@ $page_news_day = $new_day[page];
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[data]; 
-$yyn = substr($dtn,0,4); // Ãîä
-$mmn = substr($dtn,5,2); // Ìåñÿö
-$ddn = substr($dtn,8,2); // Äåíü
+$yyn = substr($dtn,0,4); // 
+$mmn = substr($dtn,5,2); // 
+$ddn = substr($dtn,8,2); // 
 
-// Ïåðåíàçíà÷àåì ïåðåìåííûå
-if ($mmn == "01") $mm1n="ÿíâàðÿ";
-if ($mmn == "02") $mm1n="ôåâðàëÿ";
-if ($mmn == "03") $mm1n="ìàðòà";
-if ($mmn == "04") $mm1n="àïðåëÿ";
-if ($mmn == "05") $mm1n="ìàÿ";
-if ($mmn == "06") $mm1n="èþíÿ";
-if ($mmn == "07") $mm1n="èþëÿ";
-if ($mmn == "08") $mm1n="àâãóñòà";
-if ($mmn == "09") $mm1n="ñåíòÿáðÿ";
-if ($mmn == "10") $mm1n="îêòÿáðÿ";
-if ($mmn == "11") $mm1n="íîÿáðÿ";
-if ($mmn == "12") $mm1n="äåêàáðÿ";
+//  
+if ($mmn == "01") $mm1n="";
+if ($mmn == "02") $mm1n="";
+if ($mmn == "03") $mm1n="";
+if ($mmn == "04") $mm1n="";
+if ($mmn == "05") $mm1n="";
+if ($mmn == "06") $mm1n="";
+if ($mmn == "07") $mm1n="";
+if ($mmn == "08") $mm1n="";
+if ($mmn == "09") $mm1n="";
+if ($mmn == "10") $mm1n="";
+if ($mmn == "11") $mm1n="";
+if ($mmn == "12") $mm1n="";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -482,9 +483,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Âðåìÿ 
+$hours = substr($dtn,11,5); //  
 
- <? 
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' . '.$hours.'</span>'; //   
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '');
 
@@ -492,7 +493,7 @@ $hours = substr($dtn,11,5); // Âðåìÿ
 
 echo '<div style="margin-left: 5px;"><span class="title"><a href="news_show.php?data='.$news[data].'">'.$news[tema].'</a></span><br />'.$ddttn;
  echo '<span style="color: #777">';
- if ($news['video']) echo ' (+ Âèäåî)';
+ if ($news['video']) echo ' (+ )';
  echo ' <img src="IMG/views.png" /> '.$news['views'].'</span>';
 
 echo '</div><br /><div style="float: left; border-bottom: 1px #D7D7D7 solid; margin-bottom: 5px">';
@@ -506,7 +507,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 </div>	
 
 <div class="index_block">
-<h2><a href="pub.php">Ïóáëèêàöèè</a></h2>
+<h2><a href="pub.php"></a></h2>
 <br />
 
  <?   mysql_connect("localhost", "host1409556", "0f7cd928"); 
@@ -516,23 +517,23 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 $pub = mysql_fetch_array($pub_all); 
 
 $dtn = $pub[data]; 
-$yyn = substr($dtn,0,4); // Ãîä
-$mmn = substr($dtn,5,2); // Ìåñÿö
-$ddn = substr($dtn,8,2); // Äåíü
+$yyn = substr($dtn,0,4); // 
+$mmn = substr($dtn,5,2); // 
+$ddn = substr($dtn,8,2); // 
 
-// Ïåðåíàçíà÷àåì ïåðåìåííûå
-if ($mmn == "01") $mm1n="ÿíâàðÿ";
-if ($mmn == "02") $mm1n="ôåâðàëÿ";
-if ($mmn == "03") $mm1n="ìàðòà";
-if ($mmn == "04") $mm1n="àïðåëÿ";
-if ($mmn == "05") $mm1n="ìàÿ";
-if ($mmn == "06") $mm1n="èþíÿ";
-if ($mmn == "07") $mm1n="èþëÿ";
-if ($mmn == "08") $mm1n="àâãóñòà";
-if ($mmn == "09") $mm1n="ñåíòÿáðÿ";
-if ($mmn == "10") $mm1n="îêòÿáðÿ";
-if ($mmn == "11") $mm1n="íîÿáðÿ";
-if ($mmn == "12") $mm1n="äåêàáðÿ";
+//  
+if ($mmn == "01") $mm1n="";
+if ($mmn == "02") $mm1n="";
+if ($mmn == "03") $mm1n="";
+if ($mmn == "04") $mm1n="";
+if ($mmn == "05") $mm1n="";
+if ($mmn == "06") $mm1n="";
+if ($mmn == "07") $mm1n="";
+if ($mmn == "08") $mm1n="";
+if ($mmn == "09") $mm1n="";
+if ($mmn == "10") $mm1n="";
+if ($mmn == "11") $mm1n="";
+if ($mmn == "12") $mm1n="";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -544,9 +545,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Âðåìÿ 
+$hours = substr($dtn,11,5); //  
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ã. '.$hours.'</span>'; // Êîíå÷íûé âèä ñòðîêè
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' . '.$hours.'</span>'; //   
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/(?:\/{3})/', '/(?:\|{3})/', '/@[^@]+@/', '/(?:\{{3})/', '/(?:\}{3})/');
 	$replace = array ('${2}', '</p><p>', '', '', '', '', '');
 
@@ -563,7 +564,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 
 </div>	
 <!-- <div class="index_block_padre">
-<h2><a href="doks.php">Äîêóìåíòû</a></h2>
+<h2><a href="doks.php"></a></h2>
 <br />
 
  <?   
@@ -573,23 +574,23 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 $news = mysql_fetch_array($news_all); 
 
 $dtn = $news[date]; 
-$yyn = substr($dtn,0,4); // Ãîä
-$mmn = substr($dtn,5,2); // Ìåñÿö
-$ddn = substr($dtn,8,2); // Äåíü
+$yyn = substr($dtn,0,4); // 
+$mmn = substr($dtn,5,2); // 
+$ddn = substr($dtn,8,2); // 
 
-// Ïåðåíàçíà÷àåì ïåðåìåííûå
-if ($mmn == "01") $mm1n="ÿíâàðÿ";
-if ($mmn == "02") $mm1n="ôåâðàëÿ";
-if ($mmn == "03") $mm1n="ìàðòà";
-if ($mmn == "04") $mm1n="àïðåëÿ";
-if ($mmn == "05") $mm1n="ìàÿ";
-if ($mmn == "06") $mm1n="èþíÿ";
-if ($mmn == "07") $mm1n="èþëÿ";
-if ($mmn == "08") $mm1n="àâãóñòà";
-if ($mmn == "09") $mm1n="ñåíòÿáðÿ";
-if ($mmn == "10") $mm1n="îêòÿáðÿ";
-if ($mmn == "11") $mm1n="íîÿáðÿ";
-if ($mmn == "12") $mm1n="äåêàáðÿ";
+//  
+if ($mmn == "01") $mm1n="";
+if ($mmn == "02") $mm1n="";
+if ($mmn == "03") $mm1n="";
+if ($mmn == "04") $mm1n="";
+if ($mmn == "05") $mm1n="";
+if ($mmn == "06") $mm1n="";
+if ($mmn == "07") $mm1n="";
+if ($mmn == "08") $mm1n="";
+if ($mmn == "09") $mm1n="";
+if ($mmn == "10") $mm1n="";
+if ($mmn == "11") $mm1n="";
+if ($mmn == "12") $mm1n="";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -601,17 +602,17 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$ddttn = $ddn.' '.$mm1n.' '.$yyn.' ã.'; // Êîíå÷íûé âèä ñòðîêè
+$ddttn = $ddn.' '.$mm1n.' '.$yyn.' .'; //   
 	$patterns = array ('/(?:\{{3})(http:\/\/[^\s\[<\(\)\|]+)(?:\}{3})-(?:\{{3})([^}]+)(?:\}{3})/i', '/\n/', '/\{/', '/\}/');
 	$replace = array ('${2}', '</p><p>', '', '');
 
 	$text = preg_replace($patterns, $replace, $news[text]);
 echo '<div style="margin-left: 5px;"><span class="title">';
-if ($news[tematika] == 'ukaz') echo 'Óêàç';
-if ($news[tematika] == 'raspor') echo 'Ðàñïîðÿæåíèå';
-if ($news[tematika] == 'cirk') echo 'Öèðêóëÿð';
-if ($news[tematika] == 'udostoverenie') echo 'Óäîñòîâåðåíèå î ðóêîïîëîæåíèè â ñàí '.$news[name];
-echo ' ¹ '.$news[nomer].' îò '.$ddttn.'</span><br />';
+if ($news[tematika] == 'ukaz') echo '';
+if ($news[tematika] == 'raspor') echo '';
+if ($news[tematika] == 'cirk') echo '';
+if ($news[tematika] == 'udostoverenie') echo '     '.$news[name];
+echo '  '.$news[nomer].'  '.$ddttn.'</span><br />';
 if ($news[tematika] != 'udostoverenie') echo '<div style="padding-left: 25%; float:right; text-align: right; margin-top: 5px; margin-bottom: 5px"><i>'.$news[name].'</i></div><br /><br />';
 echo '</div><div style="border-bottom: 1px #D7D7D7 solid; margin-top: 5px; margin-bottom: 5px">';
 
@@ -620,7 +621,7 @@ if (preg_match_all ("/^[^\t]{350}/", $news[text], $massiv_news)) {
 	$replace = array ('${2}', '', '');
 
 	$text = preg_replace($patterns, $replace, $massiv_news[0][0]);
-  $text = $text.'... <a href="doks_show.php?tip='.$news[tematika].'&data='.$news[date].'">(÷èòàòü äàëåå)</a>';
+  $text = $text.'... <a href="doks_show.php?tip='.$news[tematika].'&data='.$news[date].'">( )</a>';
   	$text = preg_replace('/\n/', '</p><p>', $text);
 
   }
@@ -633,7 +634,7 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 </div>	 -->
 <div class="index_block_padre">
 
-<h2><a href="video.php">Âèäåî</a></h2>
+<h2><a href="video.php"></a></h2>
 <br />
 
 <div style="text-align: center">
@@ -643,23 +644,23 @@ echo '<p>'.$text.'<br /><br /></p></div>';
 {
 $vid = mysql_fetch_array($vid_all); 
 $dtn = $vid[data]; 
-$yyn = substr($dtn,0,4); // Ãîä
-$mmn = substr($dtn,5,2); // Ìåñÿö
-$ddn = substr($dtn,8,2); // Äåíü
+$yyn = substr($dtn,0,4); // 
+$mmn = substr($dtn,5,2); // 
+$ddn = substr($dtn,8,2); // 
 
-// Ïåðåíàçíà÷àåì ïåðåìåííûå
-if ($mmn == "01") $mm1n="ÿíâàðÿ";
-if ($mmn == "02") $mm1n="ôåâðàëÿ";
-if ($mmn == "03") $mm1n="ìàðòà";
-if ($mmn == "04") $mm1n="àïðåëÿ";
-if ($mmn == "05") $mm1n="ìàÿ";
-if ($mmn == "06") $mm1n="èþíÿ";
-if ($mmn == "07") $mm1n="èþëÿ";
-if ($mmn == "08") $mm1n="àâãóñòà";
-if ($mmn == "09") $mm1n="ñåíòÿáðÿ";
-if ($mmn == "10") $mm1n="îêòÿáðÿ";
-if ($mmn == "11") $mm1n="íîÿáðÿ";
-if ($mmn == "12") $mm1n="äåêàáðÿ";
+//  
+if ($mmn == "01") $mm1n="";
+if ($mmn == "02") $mm1n="";
+if ($mmn == "03") $mm1n="";
+if ($mmn == "04") $mm1n="";
+if ($mmn == "05") $mm1n="";
+if ($mmn == "06") $mm1n="";
+if ($mmn == "07") $mm1n="";
+if ($mmn == "08") $mm1n="";
+if ($mmn == "09") $mm1n="";
+if ($mmn == "10") $mm1n="";
+if ($mmn == "11") $mm1n="";
+if ($mmn == "12") $mm1n="";
 
 if ($ddn == "01") $ddn="1";
 if ($ddn == "02") $ddn="2";
@@ -671,9 +672,9 @@ if ($ddn == "07") $ddn="7";
 if ($ddn == "08") $ddn="8";
 if ($ddn == "09") $ddn="9";
 
-$hours = substr($dtn,11,5); // Âðåìÿ 
+$hours = substr($dtn,11,5); //  
 
-$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' ã. '.$hours.'</span>'; // Êîíå÷íûé âèä ñòðîêè
+$ddttn = '<span class="date">'.$ddn.' '.$mm1n.' '.$yyn.' . '.$hours.'</span>'; //   
 $news_all_wer = mysql_query("SELECT * FROM host1409556_barysh.news_eparhia WHERE video = '$vid[kod]'");
 $news_wer = mysql_fetch_array($news_all_wer); 
 	$patterns = array ('/width="46\%"/');
