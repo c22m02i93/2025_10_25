@@ -1,0 +1,283 @@
+body { color: #333232;  font-weight: normal; font-size: 12px; font-family: Georgia, Arial, "Times New Roman"; margin: 0 1%; background: #fff; 
+}
+@font-face {
+    font-family: Philosopher; /* Гарнитура шрифта */
+    src: local(Philosopher), url(fonts/Philosopher-Regular.ttf); /* Для остальных браузеров */}
+@font-face {
+    font-family: 'Bookman Old Style'; /* Гарнитура шрифта */
+    src: local(Bookman Old Style), url(fonts/Bookman_Old_Style_Bold.ttf); /* Для остальных браузеров */}
+
+	a {text-decoration: none;  font-family: Georgia, Arial, "Times New Roman"; font-weight: normal; color:#00687F; }
+	a:hover {text-decoration:underline; color:#009999}
+	p {text-indent: 15px; margin: 0 10px 10px 10px; text-align: justify; font-weight: normal;word-wrap: break-word;}
+
+	hr {border: none; /* Убираем границу для браузера Firefox */
+     color: #D7D7D7; /* Цвет линии для браузера Internet Explorer */
+     background-color: #D7D7D7; /* Цвет линии для браузера Firefox и Opera */
+     height: 1px; /* Толщина линии */
+	 width: 80%}
+	
+	 h1 {font-size: 150%;
+background: none; margin: -3px -3px 10px 3px; padding: -3px; border-bottom: 5px solid #EAEAEA;font-family: Philosopher; font-weight: 900;color: #5C5C5C; 
+}
+	 img {border: none}
+.vid_ss a {color:#333232}
+
+.menu {width: 100%; height: 37px;
+margin: 0 0 10px 0;
+	background: #DB735C;
+}
+.photos li {list-style: none;}
+
+.struktura  {
+width: 96%; /* Ширина */
+float: left; /* Блоки выстраиваются по горизонтали */
+
+margin: 0 3px 10px 0; /* Отступы */
+padding-bottom: 5px;
+border-bottom: #C3D7D4 1px dotted;
+display: table-cell
+}
+#osnovnoe {        
+border: none;
+margin: 0 31% 0 10px;
+}
+
+#content_right {
+        float: right;
+	width: 30%;border: none;
+}
+
+ h2 {margin-left: 3px;padding-left: 10px}
+
+.box  .date {font-size: 100%;}
+.box a {color: #005698}
+.box {font-size: 90%;
+	position: relative;
+	width: 90%;
+	padding: 10px;
+	margin: 0 auto;
+	background-color: #fff;
+	-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+	-moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
+}
+.box:before, .box:after {
+	position: absolute;
+	width: 90%;
+	height: 10px;
+	content: ' ';
+	left: 12px;
+	bottom: 12px;
+	background: transparent;
+	-webkit-transform: skew(-5deg);
+	-moz-transform: skew(-5deg);
+	-ms-transform: skew(-5deg);
+	-o-transform: skew(-5deg);
+	transform: skew(-5deg);
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	z-index: -1;
+}
+.box:after {
+	left: auto;
+	right: 12px;
+	-webkit-transform: skew(5deg) rotate(5deg);
+	-moz-transform: skew(5deg) rotate(5deg);
+	-ms-transform: skew(5deg) rotate(5deg);
+	-o-transform: skew(5deg) rotate(5deg);
+	transform: skew(5deg) rotate(5deg);
+}
+	.box p {text-indent: 5px; margin: 0 7px 5px 7px; text-align: left;}
+
+	.box_arhi  .date {font-size: 100%;}
+.box_arhi a {color: #005698}
+.box_arhi {font-size: 90%;
+	position: relative;
+	width: 90%;
+	padding: 10px;
+	margin: 0 auto;
+	background-color: #fff;
+	-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 65px rgba(176, 149, 0, 0.5);
+	-moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 65px rgba(176, 149, 0, 0.5);
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.2), inset 0 0 65px rgba(176, 149, 0, 0.5);
+}
+.box_arhi:before, .box_arhi:after {
+	position: absolute;
+	width: 90%;
+	height: 10px;
+	content: ' ';
+	left: 12px;
+	bottom: 12px;
+	background: transparent;
+	-webkit-transform: skew(-5deg);
+	-moz-transform: skew(-5deg);
+	-ms-transform: skew(-5deg);
+	-o-transform: skew(-5deg);
+	transform: skew(-5deg);
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+	z-index: -1;
+}
+.box_arhi:after {
+	left: auto;
+	right: 12px;
+	-webkit-transform: skew(5deg) rotate(5deg);
+	-moz-transform: skew(5deg) rotate(5deg);
+	-ms-transform: skew(5deg) rotate(5deg);
+	-o-transform: skew(5deg) rotate(5deg);
+	transform: skew(5deg) rotate(5deg);
+}
+	.box_arhi p {text-indent: 5px; margin: 0 7px 5px 7px; text-align: left;}
+
+h3 {
+	position: relative;
+	text-align: center;
+	width: 75%;
+	font-weight: bold;
+	padding: 6px 20px 6px 30px;
+	margin: 0 10px 10px -31px;
+	color: #5A5A5A;
+	background-color: #EBEBEB;
+	-webkit-box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
+	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
+}
+h3:after {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	left: 0px;
+	top: 100%;
+	border-width: 5px 10px;
+	border-style: solid;
+	border-color: #7A7B7A #7A7B7A transparent transparent;
+}
+.box_arhi h3 {	background-color: #F7E9BC;
+}
+.box_arhi h3:after {	border-color: #6E6340 #6E6340 transparent transparent;
+
+}
+ #footer { 
+    clear: both; /* Отменяем действие float */
+	margin: 10px 0 0 0;
+   padding: 5px; /* Отступы вокруг текста */
+		background: #999;
+        color: #F8F7F7;
+   }
+#footer a {color: #EEECEC;}
+   
+   
+.date {font-size: 95%;
+		background: none;
+		color: #943A3A; font-family: Philosopher; font-weight:normal; 
+		}
+.oblozka:hover {opacity: .85; text-decoration: none; }
+
+ a img:hover {opacity: .8;
+filter: progid:DXImageTransform.Microsoft.Alpha(opacity=80); /* this works in IE6, IE7, and IE8 */}
+.title {font-family: Georgia, Arial,"Times New Roman";color:#005698;font-weight:normal; font-size: 12px;}
+.title a {font-family: Georgia, Arial,"Times New Roman";color:#005698;font-weight:normal ; font-size: 12px;text-decoration: none;}
+.title a:hover {text-decoration: underline;}
+.views {color: #6E6D6D;}
+
+.block_title {margin-bottom: 5px; margin-left: 10px}
+#new_day .block_title {border-bottom: 5px solid #F8FCBE;margin: 0 40% -2px 0; padding: 0 0 5px 0; display: table-cell}	
+#new_day { display: block;margin: 0 10px 10px 0; padding: 5px; float:left }
+#new_day .block_title .title a {font-size: 12px}
+#new_day p {font-size: 12px}
+
+.index_block {
+background: #fff; /* Цвет фона */
+padding: 5px; /* Поля вокруг */
+display: block; /* Блочный элемент */
+width: 47%; /* Ширина */
+float: left; /* Блоки выстраиваются по горизонтали */
+margin: 3px 3px 5px 3px; /* Отступы */
+border: none; 
+}
+ h2 {font-size: 150%;
+background: none; margin: -3px; padding: -3px; border-bottom: 5px solid #EAEAEA;font-family: Philosopher; font-weight: 900;color: #5C5C5C; 
+}
+.index_block p {text-align: left;}
+
+.rss {float: right; font-size: 12px;  margin-top: 0; padding: 7px 5px 0 5px; margin-right: 15px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);	background-color: #EBEBEB; border-radius: 0 0 5px 5px}
+.rss a {color: #5A5A5A;}
+.rss a:hover {text-decoration: none;}
+.rss a img:hover {opacity: 1;
+filter: progid:DXImageTransform.Microsoft.Alpha(opacity=100); /* this works in IE6, IE7, and IE8 */}
+   .rss:hover {	
+background: #f5f5f5; 
+  background: -moz-linear-gradient(top, #f5f5f5, #b9b9b9); 
+  background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #b9b9b9),color-stop(1, #f5f5f5)); 
+}
+
+
+div.tabs {
+
+}
+
+div.container { 
+margin: auto; 
+width: 90%; 
+margin-bottom: 10px;
+}
+
+ul.tabNavigation {
+list-style: none;
+margin: 0;
+padding: 0 0 0 30px;
+}
+
+ul.tabNavigation li {
+display: inline;
+padding: 0 0 0 5px;
+}
+
+ul.tabNavigation li a {
+padding: 3px 9px;
+background-color: #E3E2E2;
+color: #000;
+text-decoration: none; border: #BEC7BE 1px; border-style: solid solid none solid; 
+border-radius: 5px 5px 0 0;
+ font-weight: normal;
+ font-size: 12px;box-shadow: 2px -1px 5px rgba(0,0,0,0.3);
+
+}
+
+ul.tabNavigation li a.selected,
+ul.tabNavigation li a.selected:hover {
+padding: 4px 9px;
+background: #FFF;
+color: #000;
+cursor: default;
+border-bottom:#fff 1px solid;
+box-shadow: 2px -2px 2px rgba(0,0,0,0.3);}
+
+ul.tabNavigation li a:hover {
+ background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,.4)), to(rgba(255,255,255,0)));
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,.4), rgba(255,255,255,0));
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,.4), rgba(255,255,255,0));
+  background-image: -ms-linear-gradient(top, rgba(255,255,255,.4), rgba(255,255,255,0));
+  background-image: -o-linear-gradient(top, rgba(255,255,255,.4), rgba(255,255,255,0));
+  background-image: linear-gradient(top, rgba(255,255,255,.4), rgba(255,255,255,0));
+}
+
+ul.tabNavigation li a:focus {
+outline: 0;
+}
+
+div.tabs div {
+box-shadow: 2px 2px 2px rgba(0,0,0,0.5);  border: #BEC7BE 1px solid; margin: 3px 10px 15px 10px; padding: 5px
+}
+
+.tabs  h3 {
+margin-top: 0;
+}
+
+   #menu a { color:green
+        }
+
